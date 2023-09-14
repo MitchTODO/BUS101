@@ -9,12 +9,10 @@ import SwiftUI
 
 struct TermGameView: View {
     
-    @EnvironmentObject var gController:GameController
+    @EnvironmentObject var gController:TermsController
     var chapter:Chapter
 
-    
     var body: some View {
-        
         VStack{
             Text(gController.currentDefinition).padding(5)
             Spacer()
@@ -28,7 +26,6 @@ struct TermGameView: View {
                     })
                 }
             }
-
             Spacer()
         }
         .onAppear {
@@ -40,8 +37,8 @@ struct TermGameView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Text("\(gController.termCounter)/\(gController.totalQuestions)")
-                 }
-             }
+            }
+        }
     }
 }
 

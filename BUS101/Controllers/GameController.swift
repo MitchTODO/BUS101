@@ -7,16 +7,35 @@
 
 import SwiftUI
 
-class GameController:ObservableObject {
-    @Published var chapterObjects:ChapterDecoder? = nil
+struct TextFieldItem : Identifiable {
+    let id = UUID()
+    var label : String = ""
+}
+
+class TermsController:ObservableObject {
     private var shuffledTerms:[Term] = []
+    private var shuffledQuestions:[Question] = []
+    private var shuffledTFQuestions:[TfQuestion] = []
+    private var shuffledWritten:[Written] = []
     
-    // Counter for terms
+    // Counters
     @Published var termCounter = 0
-    @Published var totalQuestions = 0
+    @Published var questionCount = 0
     
+    // If all where selected combine terms & questions
+    @Published var totalTerms = 0
+    @Published var totalQuestions = 0
+    @Published var totalTFQuestions = 0
+    @Published var totalWritten = 0
+    
+    //
     @Published var currentTerm = ""
     @Published var currentDefinition = ""
+    
+    // Questions
+    @Published var currentQuestion = ""
+    @Published var currentAnswer:[String] = []
+    @Published var userTextFeilds:[TextFieldItem] = []
     
     @Published var choices:[String] = []
     
@@ -29,12 +48,20 @@ class GameController:ObservableObject {
             return
         }
         let data = try? Data(contentsOf: url)
-        var chapterData = try? JSONDecoder().decode(ChapterDecoder.self, from: data!)
-
+        let chapterObjects = try? JSONDecoder().decode(ChapterDecoder.self, from: data!)
+        //print(chapterObjects)
         // shuffle terms for randomness
-        let shuffled = chapterData!.terms.shuffled()
-        totalQuestions = shuffled.count
-        self.shuffledTerms = shuffled
+        shuffledTerms = chapterObjects!.terms.shuffled()
+        totalTerms = shuffledTerms.count
+        
+        shuffledQuestions = chapterObjects!.questions.shuffled()
+        totalQuestions = shuffledQuestions.count
+        
+        shuffledTFQuestions = chapterObjects!.tfQuestions.shuffled()
+        totalTFQuestions = shuffledTFQuestions.count
+        
+        shuffledWritten = chapterObjects!.written.shuffled()
+        totalWritten = shuffledWritten.count
     }
     
     // MARK: getNextTerm
@@ -52,6 +79,19 @@ class GameController:ObservableObject {
         termCounter += 1
     }
     
+    // MARK: getNextQuestion
+    //
+    func getNextQuestion() {
+        userTextFeilds.removeAll()
+        print(shuffledQuestions)
+        //let newQuestion = shuffledQuestions[questionCount]
+        //currentQuestion = newQuestion.q
+        //for _ in newQuestion.a {
+        //    userTextFeilds.append(TextFieldItem()) // add placeholder for input
+        //}
+        //currentAnswer = newQuestion.a
+        //questionCount += 1
+    }
     
     // TODO check for duplicates
     // MARK: getRandomTerm
@@ -68,12 +108,10 @@ class GameController:ObservableObject {
                 choices.append(randomTerm!.t)
             }
         }
-        
         choices.append(contentsOf: tempChoices.shuffled())
     }
     
     // MARK: checkAnswer
-    
     func checkAnswer(selected:String) {
         if selected == currentTerm {
             print("Correct")
@@ -84,5 +122,4 @@ class GameController:ObservableObject {
             print("Incorrect")
         }
     }
-    
 }

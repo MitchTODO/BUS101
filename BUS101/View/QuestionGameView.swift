@@ -8,13 +8,29 @@
 import SwiftUI
 
 struct QuestionGameView: View {
+    
+    @EnvironmentObject var gController:TermsController
+    var chapter:Chapter
+    
     var body: some View {
-        Text("Question")
+        VStack {
+            Text(gController.currentDefinition).padding(5)
+            Spacer()
+            Divider()
+            ForEach($gController.userTextFeilds) { $answerField in
+                TextField(answerField.label, text: $answerField.label)
+            }
+        }
+        .onAppear {
+            // load are chapter
+            
+            gController.getNextQuestion()
+        }
     }
 }
 
 struct QuestionGameView_Previews: PreviewProvider {
     static var previews: some View {
-        QuestionGameView()
+        QuestionGameView(chapter: Chapter(id: 0))
     }
 }

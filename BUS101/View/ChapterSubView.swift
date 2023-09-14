@@ -10,32 +10,34 @@ import SwiftUI
 struct ChapterSubView: View {
     var chapter:Chapter
     // set game controller for passive changes
-    @StateObject var gController = GameController()
+    @StateObject var gController = TermsController()
     
-   
     var body: some View {
-            
             List {
                 NavigationLink {
                     TermGameView(chapter:chapter ).environmentObject(gController)
                 } label: {
                     Text("Terms")
                 }
+                
                 NavigationLink {
-                    QuestionGameView()
+                    QuestionGameView(chapter: chapter).environmentObject(gController)
                 } label: {
                     Text("Basic Questions")
                 }
+                
                 NavigationLink {
                     QuestionTrueFalseGameView()
                 } label: {
                     Text("True & False Questions")
                 }
+                
                 NavigationLink {
-                    QuestionGameView()
+                    WrittenGameView()
                 } label: {
                     Text("Written Questions")
                 }
+                
             }
             .navigationTitle(Text("Chapter \(chapter.id)"))
             .toolbar {
