@@ -30,7 +30,7 @@ struct TermGameView: View {
         }
         .onAppear {
             // load chapter data on appear
-            gController.loadData(fileName: "chapter1")
+            gController.loadData(fileName: "chapter\(chapter.id)")
             // When done loading data
             gController.getNextTerm()
         }

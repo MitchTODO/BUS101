@@ -12,10 +12,18 @@ struct TextFieldItem : Identifiable {
     var label : String = ""
 }
 
+enum QuestionType {
+    case terms
+    case questions
+    case tfQuestions
+    case written
+}
+
 class TermsController:ObservableObject {
+    
     private var shuffledTerms:[Term] = []
     private var shuffledQuestions:[Question] = []
-    private var shuffledTFQuestions:[TfQuestion] = []
+    private var shuffledTFQuestions:[Question] = []
     private var shuffledWritten:[Written] = []
     
     // Counters
@@ -28,19 +36,29 @@ class TermsController:ObservableObject {
     @Published var totalTFQuestions = 0
     @Published var totalWritten = 0
     
-    //
+    // Current term
     @Published var currentTerm = ""
     @Published var currentDefinition = ""
+    @Published var choices:[String] = []
     
-    // Questions
+    // Current Questions
     @Published var currentQuestion = ""
     @Published var currentAnswer:[String] = []
     @Published var userTextFeilds:[TextFieldItem] = []
     
-    @Published var choices:[String] = []
+    // True and false questions
+    @Published var currentTFQuestion = ""
+    // First position is answer
+    // Second position is descitpion for false answers
+    @Published var currentTFAnswer:[String] = []
+    @Published var showTFCorrect = false // toggle if correct answer
+    @Published var falseDescription:String = ""
+    @Published var animateCorrectly:Bool? = nil
     
-    var choiceCount = 3
-
+    
+    private var choiceCount = 3 // TODO make settable
+    //@Published var type:QuestionType = .terms
+    
     func loadData(fileName:String) {
         guard let url = Bundle.main.url(forResource: fileName, withExtension: "json")
         else {
@@ -49,7 +67,7 @@ class TermsController:ObservableObject {
         }
         let data = try? Data(contentsOf: url)
         let chapterObjects = try? JSONDecoder().decode(ChapterDecoder.self, from: data!)
-        //print(chapterObjects)
+        
         // shuffle terms for randomness
         shuffledTerms = chapterObjects!.terms.shuffled()
         totalTerms = shuffledTerms.count
@@ -64,8 +82,8 @@ class TermsController:ObservableObject {
         totalWritten = shuffledWritten.count
     }
     
+    
     // MARK: getNextTerm
-    //
     func getNextTerm() {
         choices.removeAll()
         // TODO check if chapter object is nill
@@ -80,20 +98,30 @@ class TermsController:ObservableObject {
     }
     
     // MARK: getNextQuestion
-    //
     func getNextQuestion() {
         userTextFeilds.removeAll()
-        print(shuffledQuestions)
-        //let newQuestion = shuffledQuestions[questionCount]
-        //currentQuestion = newQuestion.q
-        //for _ in newQuestion.a {
-        //    userTextFeilds.append(TextFieldItem()) // add placeholder for input
-        //}
-        //currentAnswer = newQuestion.a
-        //questionCount += 1
+        
+        let newQuestion = shuffledQuestions[questionCount]
+        currentQuestion = newQuestion.q
+        for _ in newQuestion.a {
+            userTextFeilds.append(TextFieldItem()) // add placeholder for input
+        }
+        currentAnswer = newQuestion.a
+        questionCount += 1
     }
     
-    // TODO check for duplicates
+    
+    func getNextTFQuestion() {
+        showTFCorrect = false
+        
+        let nextTFQuestion = shuffledTFQuestions[questionCount]
+        
+        currentTFQuestion = nextTFQuestion.q
+        currentTFAnswer = nextTFQuestion.a
+        
+        questionCount += 1
+    }
+    
     // MARK: getRandomTerm
     func getRandomTerm(_ correctTerm:String) {
         var tempChoices:[String] = []
@@ -109,6 +137,23 @@ class TermsController:ObservableObject {
             }
         }
         choices.append(contentsOf: tempChoices.shuffled())
+    }
+    
+    func checkTFAnswer(selected:String) {
+        let anwser = currentTFAnswer[0]
+        if anwser == selected{
+            getNextTFQuestion()
+        }else{
+           print(currentTFAnswer.count)
+            //if currentTFAnswer.count > 0{
+            //    print(currentTFAnswer[1])
+                // show correct answer
+            //    falseDescription = currentTFAnswer[1]
+            //    showTFCorrect = true
+            //}
+
+            
+        }
     }
     
     // MARK: checkAnswer

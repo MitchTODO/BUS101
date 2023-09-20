@@ -27,7 +27,7 @@ struct ChapterSubView: View {
                 }
                 
                 NavigationLink {
-                    QuestionTrueFalseGameView()
+                    QuestionTrueFalseGameView(chapter: chapter).environmentObject(gController)
                 } label: {
                     Text("True & False Questions")
                 }

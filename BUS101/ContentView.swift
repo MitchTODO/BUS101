@@ -15,7 +15,7 @@ struct ContentView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
         animation: .default)
     private var items: FetchedResults<Item>
-
+    // Fixed chapters
     private var chapters = [Chapter(id: 1), Chapter(id: 2), Chapter(id: 3)]
                         
     var body: some View {

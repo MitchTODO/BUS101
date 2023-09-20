@@ -14,16 +14,34 @@ struct QuestionGameView: View {
     
     var body: some View {
         VStack {
-            Text(gController.currentDefinition).padding(5)
-            Spacer()
+            Text(gController.currentQuestion).padding(5)
             Divider()
+            Spacer()
+            
             ForEach($gController.userTextFeilds) { $answerField in
-                TextField(answerField.label, text: $answerField.label)
+                TextField(answerField.label, text: $answerField.label).textFieldStyle(.roundedBorder)
+                    .frame(height: 100.0)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(5)
+                    .padding(5)
             }
+            
+            Button(action: {
+                print("Correct answer \(gController.currentAnswer)")
+                for t in gController.userTextFeilds {
+                    print(t)
+                }
+            }, label: {
+                Text("Submit")
+                
+            })
+            .buttonStyle(.bordered)
+            Spacer()
+ 
         }
         .onAppear {
             // load are chapter
-            
+            gController.loadData(fileName: "chapter\(chapter.id)")
             gController.getNextQuestion()
         }
     }
